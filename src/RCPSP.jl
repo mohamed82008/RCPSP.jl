@@ -1,5 +1,7 @@
 module RCPSP
 
+const PROJECTS_DIR = joinpath(@__DIR__, "projects")
+
 using SparseArrays, Parameters, LightGraphs, GLPK, Reexport, StructArrays
 @reexport using JuMP
 
