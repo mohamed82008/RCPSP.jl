@@ -47,14 +47,14 @@ function _critical_path_info(n, deps::SparseMatrixCSC, durations)
 
     critical = copy(deps)
     for col in cols
-        if ~(isapprox(ES[col], LS[col], atol = sqrt(eps(T))))
+        if ~(isapprox(ES[col], LS[col], atol = 1e-4))
             critical[:, col] .= 0
         end
     end
     dropzeros!(critical)
     critical = copy(critical')
     for col in cols
-        if ~(isapprox(ES[col], LS[col], atol = sqrt(eps(T))))
+        if ~(isapprox(ES[col], LS[col], atol = 1e-4))
             critical[:, col] .= 0
         end
     end
