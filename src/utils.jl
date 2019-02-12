@@ -14,37 +14,6 @@ function Base.iterate(edgeiter::EdgeIterator, state = (1, 1))
     return nothing
 end
 
-struct Resources{K, T <: Tuple{Vararg{Number, K}}}
-    value::T
-end
-Resources(r) = Resources((r,))
-Base.ndims(::Type{<:Resources}) = 1
-Base.size(r::Resources) = (length(r),)
-Base.getindex(r::Resources, i...) = r.value[i...]
-Base.length(r::Resources{K}) where K = K
-function Base.iterate(r::Resources, state = 1)
-    state > length(r) && return nothing
-    return r.value[state], state + 1
-end
-Base.IndexStyle(::Type{<:Resources}) = IndexLinear()
-for op in (:+, :-)
-    @eval Base.$op(r1::Resources, r2::Resources) = Resources($op.(r1.value, r2.value))
-end
-Base.:-(r::Resources) = Resources(.-(r.value))
-
-for op in (:*, :/)
-    @eval Base.$op(r1::Real, r2::Resources) = Resources($op.(r1, r2.value))
-end
-function as_array(a::AbstractVector{<:Resources{K}}) where K
-    T = eltype(a[1].value)
-    return reshape(reinterpret(T, a), (K, length(a)))
-end
-
-struct ResourcesTrace{Ttime, Tres}
-    time_stamps::Ttime
-    resources::Tres
-end
-
 function compress!(soa)
     k = 0
     i = 1

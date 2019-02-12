@@ -1,3 +1,4 @@
+# Single mode, renewable resources only for now
 @with_kw struct OnOffEventModel{Tproject, Tmodel, Tvars}
     project::Tproject
     jump_model::Tmodel
@@ -5,10 +6,11 @@
 end
 
 function OnOffEventModel(project::Project)
-    @unpack n, deps, durations, res_req, res_lim, info = project
+    n, durations, res_req = project.n, project.durations, project.res_req
+    @unpack deps, res_lim, info = project
     Tt = eltype(durations)
     Tr = eltype(res_lim)
-    span = maximum(info.EF)
+    span = info == nothing ? 1000 : maximum(info.EF)
 
     # Should be tightened
     ES = fill(zero(Tt), n)
@@ -16,7 +18,7 @@ function OnOffEventModel(project::Project)
 
     # Resources
     b = res_req
-    B = res_lim
+    B = res_lim.r
     R = length(B)
 
     # Dependency edges
@@ -68,7 +70,7 @@ end
 
 function JuMP.optimize!(model::OnOffEventModel)
     @unpack jump_model, project, vars = model
-    @unpack n = project
+    n = project.n
     optimize!(jump_model)
 
     start_times = zeros(Float64, n) 
