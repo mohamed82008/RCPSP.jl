@@ -1,7 +1,7 @@
 function get_files(n)
     @assert n in (30, 60, 90, 120)
-    tarball = "j$n.sm.tgz"
-    cd("..") do 
+    tarball = "j$n.sm.tgz.gz"
+    cd("..") do
         rm("downloads", force=true, recursive=true)
         @info("Downloading PSPLIB files")
         mkpath("downloads")
@@ -18,10 +18,10 @@ function get_files(n)
             end
         end
         isdir("projects") || mkdir("projects")
-        cd("projects") do 
+        cd("projects") do
             isdir("$n") || mkdir("$n")
             cd("$n") do
-                run(`tar xzf ../../downloads/$tarball`)
+                run(`tar xvzf ../../downloads/$tarball`)
                 rm("../../downloads/$tarball")
             end
         end
